@@ -40,7 +40,7 @@ viewing this README from GitHub.com, assuming a repo context might be best, wher
 Alternatively, if this package is distributed on PyPi, perhaps just ``pip install <package-name>``, followed by quick
 user instructions, will suffice.
 
-  * ``git clone git@github.com:ssec-jhu/flfm-ij-plugin.git``
+  * ``git clone https://github.com/ssec-jhu/flfm-ij-plugin.git``
   * ``conda create -n flfm_ij_plugin python pip``
   * ``conda activate flfm_ij_plugin``
   * ``pip pinstall -e .``
@@ -83,7 +83,7 @@ For additional cmds see the [Conda cheat-sheet](https://docs.conda.io/projects/c
   #### with Docker:
   * Follow the above [Build with Docker instructions](#with-docker).
   * Run container from image: ``docker run -d -p 8000:8000 <image_name>``. _NOTE: ``-p 8000:8000`` is specific to the example application using port 8000._
-  * Alternatively, images can be pulled from ``ghcr.io/ssec-jhu/`` e.g., ``docker pull ghcr.io/git@github.com:ssec-jhu/flfm-ij-plugin:pr-1``.
+  * Alternatively, images can be pulled from ``ghcr.io/ssec-jhu/`` e.g., ``docker pull ghcr.io/flfm-ij-plugin:pr-1``.
 
   #### with Python ecosystem:
   * Follow the above [Build with Python ecosystem instructions](#with-python-ecosystem).
@@ -101,7 +101,7 @@ _NOTE: The following steps require ``pip install -r requirements/dev.txt``._
 * Run tox ``tox``. This will run all of linting, security, test, docs and package building within tox virtual environments.
 * To run an individual step, use ``tox -e {step}`` for example, ``tox -e test``, ``tox -e build-docs``, etc.
 
-Typically, the CI tests run in github actions will use tox to run as above. See also [ci.yml](git@github.com:ssec-jhu/flfm-ij-plugin.git/blob/main/.github/workflows/ci.yml).
+Typically, the CI tests run in github actions will use tox to run as above. See also [ci.yml](https://github.com/ssec-jhu/flfm-ij-plugin/blob/main/.github/workflows/ci.yml).
 
 ## Outside of tox:
 

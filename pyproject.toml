@@ -1,5 +1,5 @@
 [project]
-name = "flfm_ij_plugin"  # Replace flfm_ij_plugin with actual name (it's just a template).
+name = "flfm_ij_plugin"
 dynamic = ["version"]
 authors = [
     {name = "Scientifc Software Engineering Center at JHU", email = "ssec@jhu.edu"},
@@ -51,7 +51,7 @@ include = ["flfm_ij_plugin*"]
 exclude = ["*.tests*"]
 
 [tool.setuptools_scm]
-write_to = "flfm_ij_plugin/_version.py"  # Replace flfm_ij_plugin with actual name (it's just a template).
+write_to = "flfm_ij_plugin/_version.py"
 
 [tool.bandit]
 exclude_dirs = ["tests"]

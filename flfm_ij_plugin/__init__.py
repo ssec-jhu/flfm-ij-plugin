@@ -1,4 +1,4 @@
-__project__ = "flfm_ij_plugin"  # Replace flfm_ij_plugin with actual name (it's just a template).
+__project__ = "flfm_ij_plugin"
 
 try:
     from ._version import __version__
