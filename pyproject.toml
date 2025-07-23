@@ -33,9 +33,9 @@ docs = [
 ]
 
 [project.urls]
-homepage = "git@github.com:ssec-jhu/flfm-ij-plugin.git"
-documentation = "git@github.com:ssec-jhu/flfm-ij-plugin.git"
-repository = "git@github.com:ssec-jhu/flfm-ij-plugin.git"
+homepage = "https://github.com/ssec-jhu/flfm-ij-plugin"
+documentation = "https://flfm-ij-plugin.readthedocs.io/en/latest/"
+repository = "https://github.com/ssec-jhu/flfm-ij-plugin"
 
 [build-system]
 requires = ["setuptools>=61.2", "setuptools_scm[toml]>=8.0"]
