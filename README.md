@@ -1,9 +1,9 @@
 # SSEC-JHU flfm_ij_plugin
 
-[![CI](git@github.com:ssec-jhu/flfm-ij-plugin.git/actions/workflows/ci.yml/badge.svg)](git@github.com:ssec-jhu/flfm-ij-plugin.git/actions/workflows/ci.yml)
+[![CI](https://github.com/ssec-jhu/flfm-ij-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/ssec-jhu/flfm-ij-plugin/actions/workflows/ci.yml)
 [![Documentation Status](https://readthedocs.org/projects/flfm-ij-plugin/badge/?version=latest)](https://flfm-ij-plugin.readthedocs.io/en/latest/?badge=latest)
-[![codecov](https://codecov.io/gh/git@github.com:ssec-jhu/flfm-ij-plugin/branch/main/graph/badge.svg?token=0KPNKHRC2V)](https://codecov.io/gh/git@github.com:ssec-jhu/flfm-ij-plugin)
-[![Security](git@github.com:ssec-jhu/flfm-ij-plugin.git/actions/workflows/security.yml/badge.svg)](git@github.com:ssec-jhu/flfm-ij-plugin.git/actions/workflows/security.yml)
+[![codecov](https://codecov.io/gh/https://github.com/ssec-jhu/flfm-ij-plugin/branch/main/graph/badge.svg?token=0KPNKHRC2V)](https://codecov.io/gh/https://github.com/ssec-jhu/flfm-ij-plugin)
+[![Security](https://github.com/ssec-jhu/flfm-ij-plugin/actions/workflows/security.yml/badge.svg)](https://github.com/ssec-jhu/flfm-ij-plugin/actions/workflows/security.yml)
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.14052740.svg)](https://doi.org/10.5281/zenodo.14052740)
 
 
