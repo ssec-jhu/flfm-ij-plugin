@@ -1,0 +1,274 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>ssec.jhu.edu</groupId>
+  <artifactId>flfm</artifactId>
+  <!-- TODO: make this dynamic-->
+  <version>1.0-SNAPSHOT</version>
+  <name>FLFM</name>
+  <url>https://github.com/ssec-jhu/flfm-ij-plugin</url>
+  <description>This is an ImageJ 1.x plugin wrapper for the JHU SSEC FLFM (https://github.com/ssec-jhu/flfm) project.</description>
+
+  <!-- This needs to be 1.8 to work with ImageJ 1.x -->
+  <properties>
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+    <djl.version>0.32.0</djl.version>
+    <org.checkstyle.google.severity>error</org.checkstyle.google.severity>
+  </properties>
+
+  <!-- This is the BOM used for DJL versioning: https://docs.djl.ai/master/bom/index.html-->
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>ai.djl</groupId>
+        <artifactId>bom</artifactId>
+        <version>${djl.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <dependencies>
+    <!-- https://mvnrepository.com/artifact/net.imagej/ij -->
+    <dependency>
+      <groupId>net.imagej</groupId>
+      <artifactId>ij</artifactId>
+      <version>1.54p</version>
+    </dependency>
+
+    <!-- The versions for ai.djl and ai.djl.pytorch are stored in the BOM-->
+    <!-- https://mvnrepository.com/artifact/ai.djl/api -->
+    <dependency>
+      <groupId>ai.djl</groupId>
+      <artifactId>api</artifactId>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/ai.djl.pytorch/pytorch-engine -->
+    <dependency>
+      <groupId>ai.djl.pytorch</groupId>
+      <artifactId>pytorch-engine</artifactId>
+      <scope>runtime</scope>
+    </dependency>
+
+    <!-- This is the Reload4j logging framework -->
+    <!-- https://mvnrepository.com/artifact/ch.qos.reload4j/reload4j -->
+    <dependency>
+      <groupId>ch.qos.reload4j</groupId>
+      <artifactId>reload4j</artifactId>
+      <version>1.2.26</version>
+    </dependency>
+
+    <!-- This is the SLF4J API used for logging-->
+    <!-- https://mvnrepository.com/artifact/org.slf4j/slf4j-reload4j -->
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-reload4j</artifactId>
+      <version>2.0.17</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/com.puppycrawl.tools/checkstyle -->
+    <dependency>
+      <groupId>com.puppycrawl.tools</groupId>
+      <artifactId>checkstyle</artifactId>
+      <version>9.3</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-checkstyle-plugin -->
+    <dependency>
+      <groupId>org.apache.maven.plugins</groupId>
+      <artifactId>maven-checkstyle-plugin</artifactId>
+      <version>3.6.0</version>
+      <scope>provided</scope>
+    </dependency>
+
+  </dependencies>
+
+  <!-- Profiles for different build environments
+       There one profile for Linux "linux-build" and one for Windows "windows-build"-->
+  <profiles>
+    <profile>
+      <id>linux-cuda</id>
+      <dependencies>
+        <dependency>
+          <groupId>ai.djl.pytorch</groupId>
+          <artifactId>pytorch-native-cu124</artifactId>
+          <classifier>linux-x86_64</classifier>
+          <version>2.5.1</version>
+          <scope>runtime</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+
+    <profile>
+      <id>windows-cuda</id>
+      <dependencies>
+        <dependency>
+          <groupId>ai.djl.pytorch</groupId>
+          <artifactId>pytorch-native-cu124</artifactId>
+          <classifier>win-x86_64</classifier>
+          <version>2.5.1</version>
+          <scope>runtime</scope>
+        </dependency>
+      </dependencies>
+    </profile>
+
+  </profiles>
+
+  <build>
+    <plugins>
+      <!-- Configuration for the for the checkstyle plugin that does the linting-->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-checkstyle-plugin</artifactId>
+        <version>3.6.0</version>
+        <configuration>
+          <encoding>UTF-8</encoding>
+          <consoleOutput>true</consoleOutput>
+          <failsOnError>true</failsOnError>
+          <linkXRef>false</linkXRef>
+          <configLocation>google_checks.xml</configLocation>
+        </configuration>
+        <executions>
+          <execution>
+            <phase>verify</phase>
+            <goals>
+              <goal>check</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>3.4.0</version>
+        <configuration>
+          <skip>true</skip>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>3.6.0</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <!-- !!!the finalName NEEDS to have an underscore!!! -->
+              <!-- https://imagej.net/ij/docs/guide/146-16.html#sub:Plugins -->
+              <finalName>flfm_plugin</finalName>
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+              <shadedArtifactAttached>false</shadedArtifactAttached>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>ssec.jhu.flfm.StandaloneUI</mainClass>
+                </transformer>
+              </transformers>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+
+        <!-- Spotless Plugin for formatting code -->
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
+        <version>2.30.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>check</goal>
+              <goal>apply</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <java>
+            <googleJavaFormat/>
+            <importOrder/>
+            <removeUnusedImports/>
+          </java>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+        <version>4.0.4</version>
+        <configuration>
+          <effort>Max</effort>
+          <threshold>medium</threshold>
+          <failOnError>true</failOnError>
+          <!-- <includeFilterFile>${session.executionRootDirectory}/spotbugs-security-include.xml</includeFilterFile> -->
+          <!-- <excludeFilterFile>${session.executionRootDirectory}/spotbugs-security-exclude.xml</excludeFilterFile> -->
+          <plugins>
+              <plugin>
+                  <groupId>com.h3xstream.findsecbugs</groupId>
+                  <artifactId>findsecbugs-plugin</artifactId>
+                  <version>1.12.0</version>
+              </plugin>
+          </plugins>
+        </configuration>
+      </plugin>
+
+
+
+      <!-- Enforcer Plugin to ensure Java version -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-enforcer-plugin</artifactId>
+        <version>3.4.1</version>
+        <executions>
+          <execution>
+            <id>enforce-java</id>
+            <goals>
+              <goal>enforce</goal>
+            </goals>
+            <configuration>
+              <rules>
+                <requireJavaVersion>
+                  <version>[1.8,1.9)</version>
+                </requireJavaVersion>
+              </rules>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- https://mvnrepository.com/artifact/org.apache.maven.plugins/maven-compiler-plugin -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.14.0</version>
+        <configuration>
+          <source>${maven.compiler.sourcse}</source>
+          <target>${maven.compiler.target}</target>
+          <debug>false</debug> <!-- Set to true if you want debug symbols in the compiled classes -->
+          <debugLevel>lines,vars,source</debugLevel>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
