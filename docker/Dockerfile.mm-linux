@@ -55,8 +55,8 @@ RUN micromamba create -p /tmp/env
 RUN micromamba install -p /tmp/env -c conda-forge swig=3 openjdk=8
 
 RUN micromamba run -p /tmp/env ./autogen.sh
-# Th following line is detailed in ./configure.ac
-# note that --enable-imagej-plugin=/ij points to the directory where 
+# The following line is detailed in ./configure.ac
+# note that --enable-imagej-plugin=/ij points to the directory where
 # we installed ImageJ above.
 RUN micromamba run -p /tmp/env ./configure --enable-imagej-plugin=/ij
 WORKDIR /app/3rdpartypublic
