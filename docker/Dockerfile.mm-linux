@@ -66,6 +66,7 @@ RUN micromamba run -p /tmp/env make fetchdeps
 RUN micromamba run -p /tmp/env make -j4
 RUN micromamba run -p /tmp/env make install
 
+# Switch to alpine to reduce image size.
 FROM alpine:3.22.1
 COPY --from=builder /ij /ij
 RUN mkdir -p /dest
