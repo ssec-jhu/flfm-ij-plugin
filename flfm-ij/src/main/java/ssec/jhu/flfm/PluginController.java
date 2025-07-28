@@ -2,6 +2,7 @@ package ssec.jhu.flfm;
 
 import java.awt.Button;
 import java.awt.Component;
+import java.awt.EventQueue;
 import java.awt.FileDialog;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,9 +18,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,18 +63,31 @@ public class PluginController implements ActionListener{
     }
   }
 
-
   public void postInit(){
     processModelLocations();
+    processAvailableDevices();
+  }
 
 
+  /// Async Methods ==================================================
+  public void processAvailableDevices() {
+    executorService.submit(() -> {
+      this.deviceInfos = Algorithm.getDevices();
+      if (this.deviceInfos == null || this.deviceInfos.length == 0) {
+        logger.error("No devices found, error in engine.");
+      }
+      logger.debug("Found {} devices", this.deviceInfos.length);
+      String[] deviceDisplays = java.util.Arrays.stream(this.deviceInfos)
+        .map(DeviceInfo::toDisplay)
+        .toArray(String[]::new);
+      EventQueue.invokeLater(() -> pluginView.setDevices(deviceDisplays));
+    });
   }
 
   public void processModelLocations(){
     executorService.submit(() -> {
       this.modelLocations = getModelLocations();
       if (this.modelLocations == null || this.modelLocations.length == 0) {
-        logger.warn("No model locations found, using default models.");
         this.modelLocations = new String[]{}; // Default to an empty array if no models found
       }
 
@@ -91,13 +102,28 @@ public class PluginController implements ActionListener{
             .map(String::valueOf)
             .toArray(String[]::new);
 
-        pluginView.setIterations(iterations);
+        EventQueue.invokeLater(() -> pluginView.setIterations(iterations));
       } else {
         logger.warn("No model locations found.");
       }
     });
   }
 
+  public void runModel(){
+    executorService.submit(() -> {
+      if (psfImage == null || inputImage == null) {
+        logger.error("PSF or Input image is not set");
+        return;
+      }
+
+      // Run the model inference
+      logger.debug("Running model with PSF: {} and Input: {}", psfImage.getTitle(), inputImage.getTitle());
+      // Model inference logic goes here
+    });
+  }
+
+
+  // ===========================================================================
 
   // Image Retrieval Methods ===================================================
 

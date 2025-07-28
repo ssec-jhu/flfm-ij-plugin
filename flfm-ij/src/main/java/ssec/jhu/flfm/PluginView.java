@@ -19,7 +19,8 @@ import ij.plugin.frame.PlugInFrame;
 public class PluginView extends PlugInFrame {
 
   private static final Logger logger = LoggerFactory.getLogger(PluginView.class);
-  
+  private static final String[] placeholder = new String[] {"    "}; // Choices
+
   private PluginController pluginController;
   
   // Data fields
@@ -95,24 +96,18 @@ public class PluginView extends PlugInFrame {
     gbc.gridwidth = 4;
     this.textFieldInput = addTextField(this, Constants.LBL_NO_INPUT, gbc, false);
 
-    // move to controller with init
-    String[] tmpModelPaths = new String[] {"1", "2", "3"}; // Example model paths
-    
     row++;
     logger.debug("Initializing Model Choice");
     gbc.gridx = 0;
     gbc.gridy = row;
     gbc.gridwidth = 1;
-    this.iterationChoice = addChoice(this, tmpModelPaths, gbc);
+    this.iterationChoice = addChoice(this, PluginView.placeholder, gbc);
 
-    // move to controller with init
-    String[] tmpDeviceInfos = new String[] {"CPU", "GPU:0", "GPU:1"}; // Example device infos
-    
     logger.debug("Initializing Device Choice");
     gbc.gridx = 1;
     gbc.gridy = row;
     gbc.gridwidth = 1;
-    this.deviceChoice = addChoice(this, tmpDeviceInfos, gbc);
+    this.deviceChoice = addChoice(this, PluginView.placeholder, gbc);
 
     logger.debug("Initializing Calculate Button");
     gbc.gridx = 2;
@@ -167,5 +162,16 @@ public class PluginView extends PlugInFrame {
     for (String iteration : iterations) {
       this.iterationChoice.add(iteration);
     }
+
+    this.repaint();
+  }
+
+  public void setDevices(String[] devices) {
+    this.deviceChoice.removeAll();
+    for (String device : devices) {
+      this.deviceChoice.add(device);
+    }
+
+    this.repaint();
   }
 }
