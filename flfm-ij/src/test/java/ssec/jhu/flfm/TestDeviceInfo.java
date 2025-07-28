@@ -23,7 +23,7 @@ public class TestDeviceInfo {
     if (id == -1) {
       assertEquals(type.toLowerCase(), device.toDeviceName());
     } else {
-      assertEquals(type.toLowerCase() + ":" + id, device.toDeviceName());
+      assertEquals(type.toLowerCase() + id, device.toDeviceName());
     }
   }
 
