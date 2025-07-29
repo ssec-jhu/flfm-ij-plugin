@@ -211,7 +211,7 @@ public class PluginController implements ActionListener {
   }
 
   public static String[] getModelLocationsFromJar() {
-    URL url = UtilsUI.class.getClassLoader().getResource("models");
+    URL url = PluginController.class.getClassLoader().getResource("models");
     String[] result = null;
 
     if (url != null && url.getProtocol().equals("jar")) {
