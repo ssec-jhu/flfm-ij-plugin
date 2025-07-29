@@ -1,6 +1,6 @@
 package ssec.jhu.flfm;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import ai.djl.ndarray.NDArray;
 import ai.djl.ndarray.NDManager;

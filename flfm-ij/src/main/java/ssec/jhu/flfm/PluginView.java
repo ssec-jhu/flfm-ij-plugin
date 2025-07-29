@@ -21,19 +21,14 @@ public class PluginView extends PlugInFrame {
 
   private PluginController pluginController;
 
-  // Data fields
-  private ImagePlus psfImage;
-  private ImagePlus inputImage;
-  private String[] modelPaths;
-
   // UI components
-  private Button btnPsf;
-  private Button btnInput;
-  private Button btnCalculate;
-  private Choice iterationChoice;
-  private Choice deviceChoice;
-  private TextField textFieldPsf;
-  private TextField textFieldInput;
+  protected Button btnPsf;
+  protected Button btnInput;
+  protected Button btnCalculate;
+  protected Choice iterationChoice;
+  protected Choice deviceChoice;
+  protected TextField textFieldPsf;
+  protected TextField textFieldInput;
 
   public PluginView() {
     this("PluginUI");
@@ -61,7 +56,8 @@ public class PluginView extends PlugInFrame {
     ui.setLocationRelativeTo(null);
   }
 
-  private void initComponents() {
+  // Make initComponents method public for testing
+  public void initComponents() {
     logger.debug("Initializing PluginUI components");
     this.setLayout(new GridBagLayout());
     GridBagConstraints gbc = new GridBagConstraints();
