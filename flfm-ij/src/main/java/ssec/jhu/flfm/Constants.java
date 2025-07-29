@@ -20,4 +20,5 @@ public class Constants {
   public static final String LBL_PROMPT_TITLE = "Open Image";
 
   public static final String PT_ENGINE_CLASS = "ai.djl.pytorch.engine.PtEngineProvider";
+  public static final String BTN_WORKING = "Working...";
 }

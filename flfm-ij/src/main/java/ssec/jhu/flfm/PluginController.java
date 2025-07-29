@@ -76,7 +76,17 @@ public class PluginController implements ActionListener {
   public void processAvailableDevices() {
     executorService.submit(
         () -> {
-          this.deviceInfos = Algorithm.getDevices();
+          ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+          try {
+            Thread.currentThread().setContextClassLoader(PluginController.class.getClassLoader());
+            this.deviceInfos = Algorithm.getDevices();
+          } catch (Exception e) {
+            logger.error("Error occurred while running model: {}", e.getMessage());
+            e.printStackTrace();
+            this.deviceInfos = new DeviceInfo[] {};
+          } finally {
+            Thread.currentThread().setContextClassLoader(originalClassLoader);
+          }
           if (this.deviceInfos == null || this.deviceInfos.length == 0) {
             logger.error("No devices found, error in engine.");
           }
@@ -117,11 +127,10 @@ public class PluginController implements ActionListener {
   }
 
   public void runModel() {
-
     String selectedModel = modelLocations[pluginView.getSelectedIterationIndex()];
     DeviceInfo selectedDevice = deviceInfos[pluginView.getSelectedDeviceIndex()];
     logger.debug("Selected model: {}, Selected device: {}", selectedModel, selectedDevice);
-
+    this.pluginView.startProcessImage();
     executorService.submit(
         () -> {
           if (psfImage == null || inputImage == null) {
@@ -142,7 +151,7 @@ public class PluginController implements ActionListener {
             Thread.currentThread().setContextClassLoader(originalClassLoader);
           }
 
-          EventQueue.invokeLater(() -> pluginView.displayProcessedImage(processedImage[0]));
+          EventQueue.invokeLater(() -> pluginView.endProcessedImage(processedImage[0]));
         });
   }
   // ===========================================================================

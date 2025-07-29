@@ -182,12 +182,21 @@ public class PluginView extends PlugInFrame {
     return this.deviceChoice.getSelectedIndex();
   }
 
-  public void displayProcessedImage(ImagePlus processedImage) {
+  public void startProcessImage() {
+    this.btnCalculate.setLabel(Constants.BTN_WORKING);
+    this.btnCalculate.setEnabled(false);
+    this.repaint();
+  }
+
+  public void endProcessedImage(ImagePlus processedImage) {
     if (processedImage == null) {
       logger.error("Processed image is null");
     } else {
       logger.debug("Displaying processed image: {}", processedImage.getTitle());
       processedImage.show();
     }
+    this.btnCalculate.setLabel(Constants.BTN_CALCULATE);
+    this.btnCalculate.setEnabled(true);
+    this.repaint();
   }
 }
