@@ -1,5 +1,8 @@
 package ssec.jhu.flfm;
 
+import ij.ImagePlus;
+import ij.gui.GUI;
+import ij.plugin.frame.PlugInFrame;
 import java.awt.Button;
 import java.awt.Choice;
 import java.awt.Frame;
@@ -8,13 +11,8 @@ import java.awt.GridBagLayout;
 import java.awt.Label;
 import java.awt.TextField;
 import java.awt.event.ActionListener;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import ij.ImagePlus;
-import ij.gui.GUI;
-import ij.plugin.frame.PlugInFrame;
 
 public class PluginView extends PlugInFrame {
 
@@ -22,7 +20,7 @@ public class PluginView extends PlugInFrame {
   private static final String[] placeholder = new String[] {"    "}; // Choices
 
   private PluginController pluginController;
-  
+
   // Data fields
   private ImagePlus psfImage;
   private ImagePlus inputImage;
@@ -36,7 +34,6 @@ public class PluginView extends PlugInFrame {
   private Choice deviceChoice;
   private TextField textFieldPsf;
   private TextField textFieldInput;
-
 
   public PluginView() {
     this("PluginUI");
@@ -56,12 +53,12 @@ public class PluginView extends PlugInFrame {
   }
 
   public static void main(String[] args) {
-      PluginView ui = new PluginView("Standalone UI");
-      ui.initComponents();
-      ui.pack();
-      ui.pluginController.postInit();
-      ui.setVisible(true);
-      ui.setLocationRelativeTo(null);
+    PluginView ui = new PluginView("Standalone UI");
+    ui.initComponents();
+    ui.pack();
+    ui.pluginController.postInit();
+    ui.setVisible(true);
+    ui.setLocationRelativeTo(null);
   }
 
   private void initComponents() {
@@ -70,13 +67,13 @@ public class PluginView extends PlugInFrame {
     GridBagConstraints gbc = new GridBagConstraints();
     gbc.fill = GridBagConstraints.HORIZONTAL;
     int row = 0;
-    
+
     logger.debug("Initializing PSF Button");
     gbc.gridx = 0;
     gbc.gridy = row;
     gbc.gridwidth = 2;
     this.btnPsf = addButton(this, Constants.BTN_PSF, gbc, this.pluginController);
-    
+
     logger.debug("Initializing PSF Text Field");
     gbc.gridx = 2;
     gbc.gridy = row;
@@ -124,7 +121,8 @@ public class PluginView extends PlugInFrame {
     return lbl;
   }
 
-  protected static Button addButton(Frame frame, String label, GridBagConstraints gbc, ActionListener actionListener) {
+  protected static Button addButton(
+      Frame frame, String label, GridBagConstraints gbc, ActionListener actionListener) {
     Button button = new Button(label);
     if (actionListener != null) {
       button.addActionListener(actionListener);
@@ -133,7 +131,8 @@ public class PluginView extends PlugInFrame {
     return button;
   }
 
-  protected static TextField addTextField(Frame frame, String label, GridBagConstraints gbc, boolean isEditable) {
+  protected static TextField addTextField(
+      Frame frame, String label, GridBagConstraints gbc, boolean isEditable) {
     TextField textField = new TextField(label);
     textField.setEditable(isEditable);
     frame.add(textField, gbc);
@@ -173,5 +172,22 @@ public class PluginView extends PlugInFrame {
     }
 
     this.repaint();
+  }
+
+  public int getSelectedIterationIndex() {
+    return this.iterationChoice.getSelectedIndex();
+  }
+
+  public int getSelectedDeviceIndex() {
+    return this.deviceChoice.getSelectedIndex();
+  }
+
+  public void displayProcessedImage(ImagePlus processedImage) {
+    if (processedImage == null) {
+      logger.error("Processed image is null");
+    } else {
+      logger.debug("Displaying processed image: {}", processedImage.getTitle());
+      processedImage.show();
+    }
   }
 }

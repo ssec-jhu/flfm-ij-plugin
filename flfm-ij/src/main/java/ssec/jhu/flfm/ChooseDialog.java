@@ -6,7 +6,7 @@ import java.awt.Frame;
 
 public class ChooseDialog {
 
-  public static String showInput(Frame parent){
+  public static String showInput(Frame parent) {
 
     Dialog dialog = new Dialog(parent, Constants.LBL_SELECT_IMG);
     dialog.setLayout(new FlowLayout());
@@ -15,6 +15,4 @@ public class ChooseDialog {
 
     return "";
   }
-    
-
 }

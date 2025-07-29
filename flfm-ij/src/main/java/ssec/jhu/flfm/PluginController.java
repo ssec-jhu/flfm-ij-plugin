@@ -1,5 +1,6 @@
 package ssec.jhu.flfm;
 
+import ij.ImagePlus;
 import java.awt.Button;
 import java.awt.Component;
 import java.awt.EventQueue;
@@ -18,13 +19,11 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ij.ImagePlus;
+public class PluginController implements ActionListener {
 
-public class PluginController implements ActionListener{
   private static final Logger logger = LoggerFactory.getLogger(PluginController.class);
 
   private final ExecutorService executorService;
@@ -53,76 +52,99 @@ public class PluginController implements ActionListener{
         break;
       case Constants.BTN_INPUT:
         inputImage = getImage(pluginView, Constants.LBL_SELECT_INPUT);
-        pluginView.setInputTextField(inputImage != null ? inputImage.getTitle() : Constants.LBL_NO_INPUT);
+        pluginView.setInputTextField(
+            inputImage != null ? inputImage.getTitle() : Constants.LBL_NO_INPUT);
         break;
       case Constants.BTN_CALCULATE:
-        // Handle calculation logic here
+        if (psfImage == null || inputImage == null) {
+          logger.error("PSF or Input image is not set");
+          return;
+        }
+        runModel();
         break;
       default:
         logger.warn("Unknown action command: {}", command);
     }
   }
 
-  public void postInit(){
+  public void postInit() {
     processModelLocations();
     processAvailableDevices();
   }
 
-
   /// Async Methods ==================================================
   public void processAvailableDevices() {
-    executorService.submit(() -> {
-      this.deviceInfos = Algorithm.getDevices();
-      if (this.deviceInfos == null || this.deviceInfos.length == 0) {
-        logger.error("No devices found, error in engine.");
-      }
-      logger.debug("Found {} devices", this.deviceInfos.length);
-      String[] deviceDisplays = java.util.Arrays.stream(this.deviceInfos)
-        .map(DeviceInfo::toDisplay)
-        .toArray(String[]::new);
-      EventQueue.invokeLater(() -> pluginView.setDevices(deviceDisplays));
-    });
+    executorService.submit(
+        () -> {
+          this.deviceInfos = Algorithm.getDevices();
+          if (this.deviceInfos == null || this.deviceInfos.length == 0) {
+            logger.error("No devices found, error in engine.");
+          }
+          logger.debug("Found {} devices", this.deviceInfos.length);
+          String[] deviceDisplays =
+              java.util.Arrays.stream(this.deviceInfos)
+                  .map(DeviceInfo::toDisplay)
+                  .toArray(String[]::new);
+          EventQueue.invokeLater(() -> pluginView.setDevices(deviceDisplays));
+        });
   }
 
-  public void processModelLocations(){
-    executorService.submit(() -> {
-      this.modelLocations = getModelLocations();
-      if (this.modelLocations == null || this.modelLocations.length == 0) {
-        this.modelLocations = new String[]{}; // Default to an empty array if no models found
-      }
+  public void processModelLocations() {
+    executorService.submit(
+        () -> {
+          this.modelLocations = getModelLocations();
+          if (this.modelLocations == null || this.modelLocations.length == 0) {
+            this.modelLocations = new String[] {}; // Default to an empty array if no models found
+          }
 
-      logger.debug("Found {} model locations", this.modelLocations.length);
+          logger.debug("Found {} model locations", this.modelLocations.length);
 
-      if (this.modelLocations != null && this.modelLocations.length > 0) {
-        String[] iterations = java.util.Arrays.stream(this.modelLocations)
-            .map(path -> path.replaceAll("[^0-9]", ""))
-            .filter(path -> !path.isEmpty())
-            .distinct()
-            .sorted()
-            .map(String::valueOf)
-            .toArray(String[]::new);
+          if (this.modelLocations != null && this.modelLocations.length > 0) {
+            String[] iterations =
+                java.util.Arrays.stream(this.modelLocations)
+                    .map(path -> path.replaceAll("[^0-9]", ""))
+                    .filter(path -> !path.isEmpty())
+                    .distinct()
+                    .sorted()
+                    .map(String::valueOf)
+                    .toArray(String[]::new);
 
-        EventQueue.invokeLater(() -> pluginView.setIterations(iterations));
-      } else {
-        logger.warn("No model locations found.");
-      }
-    });
+            EventQueue.invokeLater(() -> pluginView.setIterations(iterations));
+          } else {
+            logger.warn("No model locations found.");
+          }
+        });
   }
 
-  public void runModel(){
-    executorService.submit(() -> {
-      if (psfImage == null || inputImage == null) {
-        logger.error("PSF or Input image is not set");
-        return;
-      }
+  public void runModel() {
 
-      // Run the model inference
-      logger.debug("Running model with PSF: {} and Input: {}", psfImage.getTitle(), inputImage.getTitle());
-      // Model inference logic goes here
-    });
+    String selectedModel = modelLocations[pluginView.getSelectedIterationIndex()];
+    DeviceInfo selectedDevice = deviceInfos[pluginView.getSelectedDeviceIndex()];
+    logger.debug("Selected model: {}, Selected device: {}", selectedModel, selectedDevice);
+
+    executorService.submit(
+        () -> {
+          if (psfImage == null || inputImage == null) {
+            logger.error("PSF or Input image is not set");
+            return;
+          }
+          final ImagePlus[] processedImage = new ImagePlus[1];
+
+          ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+          try {
+            Thread.currentThread().setContextClassLoader(PluginController.class.getClassLoader());
+            processedImage[0] =
+                Algorithm.runModel(selectedModel, selectedDevice, this.psfImage, this.inputImage);
+          } catch (Exception e) {
+            logger.error("Error occurred while running model: {}", e.getMessage());
+            e.printStackTrace();
+          } finally {
+            Thread.currentThread().setContextClassLoader(originalClassLoader);
+          }
+
+          EventQueue.invokeLater(() -> pluginView.displayProcessedImage(processedImage[0]));
+        });
   }
-
-
   // ===========================================================================
 
   // Image Retrieval Methods ===================================================
@@ -147,7 +169,7 @@ public class PluginController implements ActionListener{
       return new ImagePlus(selectedFile.getAbsolutePath());
     }
     return null;
- }
+  }
 
   public static ImagePlus getImageFromOpenWindows(Component parent) {
     String[] windowTitles = ij.WindowManager.getImageTitles();
@@ -155,22 +177,22 @@ public class PluginController implements ActionListener{
       logger.debug("No ImageJ windows found going to disk instead.");
       return null;
     }
-    String selectedTitle = (String) javax.swing.JOptionPane.showInputDialog(
-      parent,
-      Constants.LBL_SELECT_IMG,
-      "Open Images",
-      javax.swing.JOptionPane.PLAIN_MESSAGE,
-      null,
-      windowTitles,
-      windowTitles[0]
-    );
+    String selectedTitle =
+        (String)
+            javax.swing.JOptionPane.showInputDialog(
+                parent,
+                Constants.LBL_SELECT_IMG,
+                "Open Images",
+                javax.swing.JOptionPane.PLAIN_MESSAGE,
+                null,
+                windowTitles,
+                windowTitles[0]);
     if (selectedTitle != null) {
       return ij.WindowManager.getImage(selectedTitle);
     }
     return null;
   }
   // ===========================================================================
-
 
   // Model Retrieval Methods ===================================================
 
@@ -225,6 +247,5 @@ public class PluginController implements ActionListener{
 
     return modelPaths;
   }
-
-
+  // ===========================================================================
 }

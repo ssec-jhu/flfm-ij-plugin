@@ -107,7 +107,7 @@ public class Algorithm {
     }
 
     DeviceInfo[] deviceInfos;
-    if (devices[0].getDeviceType().toLowerCase() == "gpu") {
+    if (devices[0].getDeviceType().toLowerCase().equals("gpu")) {
       // if the first device is a GPU then all listed devices are GPUs and we
       // can add one more CPU device to the list.
       deviceInfos = new DeviceInfo[devices.length + 1];
@@ -142,8 +142,23 @@ public class Algorithm {
       NDArray inputArray = ArrayUtils.convertImageToArray(inputImage, manager);
       psfArray.divi(psfArray.sum()); // Normalize PSF
 
-      Path modelPath = Paths.get(modelPathStr);
-      String modelName = modelPath.getFileName().toString();
+      // Define a safe base directory for models, This prevents path traversal attacks.
+      Path baseDir = Paths.get("models").toAbsolutePath().normalize();
+      Path modelPath = baseDir.resolve(modelPathStr).normalize();
+      if (!modelPath.startsWith(baseDir)) {
+        logger.error("Potential path traversal attempt detected: " + modelPathStr);
+        return null;
+      }
+
+      Path modelPathName = modelPath.getFileName();
+
+      String modelName;
+      if (modelPathName != null) {
+        modelName = modelPathName.toString();
+      } else {
+        logger.error("modelPath.getFileName() returned null for path: " + modelPath);
+        return null;
+      }
 
       try (Model model = Model.newInstance(modelName, "PyTorch")) {
         try {
