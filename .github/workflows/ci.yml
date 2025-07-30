@@ -47,15 +47,15 @@ jobs:
           path: flfm-ij/target/site/jacoco/jacoco.xml
           retention-days: 7
           if-no-files-found: error
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v3
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          files: flfm-ij/target/site/jacoco/jacoco.xml
-          flags: unittests
-          name: codecov-umbrella
-          verbose: true
-          fail_ci_if_error: true
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v3
+      #   with:
+      #     token: ${{ secrets.CODECOV_TOKEN }}
+      #     files: flfm-ij/target/site/jacoco/jacoco.xml
+      #     flags: unittests
+      #     name: codecov-umbrella
+      #     verbose: true
+      #     fail_ci_if_error: true
 
   build:
     name: Build JAR with Maven
@@ -77,25 +77,25 @@ jobs:
           name: flfm-ij-plugin-jar
           path: flfm-ij/target/*.jar
 
-  publish:
-    name: Publish Docker image
-    runs-on: ubuntu-latest
-    needs: build
-    permissions:
-      contents: read
-      packages: write
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build and push Docker image
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: ghcr.io/${{ github.repository }}:latest
+  # publish:
+  #   name: Publish Docker image
+  #   runs-on: ubuntu-latest
+  #   needs: build
+  #   permissions:
+  #     contents: read
+  #     packages: write
+  #   steps:
+  #     - name: Checkout repository
+  #       uses: actions/checkout@v3
+  #     - name: Log in to the Container registry
+  #       uses: docker/login-action@v3
+  #       with:
+  #         registry: ghcr.io
+  #         username: ${{ github.actor }}
+  #         password: ${{ secrets.GITHUB_TOKEN }}
+  #     - name: Build and push Docker image
+  #       uses: docker/build-push-action@v5
+  #       with:
+  #         context: .
+  #         push: true
+  #         tags: ghcr.io/${{ github.repository }}:latest
