@@ -40,6 +40,22 @@ jobs:
           cache: 'maven'
       - name: Build and run tests
         run: mvn -B clean test --file flfm-ij/pom.xml
+      - name: Archive coverage report
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: flfm-ij/target/site/jacoco/jacoco.xml
+          retention-days: 7
+          if-no-files-found: error
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: flfm-ij/target/site/jacoco/jacoco.xml
+          flags: unittests
+          name: codecov-umbrella
+          verbose: true
+          fail_ci_if_error: true
 
   build:
     name: Build JAR with Maven
