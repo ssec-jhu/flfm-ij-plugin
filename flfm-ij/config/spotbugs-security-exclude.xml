@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <Match>
+        <Class name="~.*\.PluginController"/>
+    </Match>
+    <Match>
+        <!-- For some reason spotbugs thinks we don't use the variables in PluginController -->
+        <Bug code="UUF_UNUSED_FIELD"/>
+    </Match>
+</FindBugsFilter>

@@ -48,6 +48,13 @@ user instructions, will suffice.
 
 # Installation, Build, & Run instructions
 
+IJ notes:
+- You need to start IJ with the classpath to the plugin jar
+`./ImageJ -cp plugins/flfm_plugin.linux.jar`
+- You need to add the djl cache to the path if it can't find your GPU
+This can be usually found at `~/.djl.ai/pytorch/2.5.2-cu124-linux-x86_64/`
+or `C:\Users\<username>\.djl.ai\pytorch\2.5.1-cu124-win-x86_64\`
+
 ### Conda:
 
 For additional cmds see the [Conda cheat-sheet](https://docs.conda.io/projects/conda/en/4.6.0/_downloads/52a95608c49671267e40c689e0bc00ca/conda-cheatsheet.pdf).
