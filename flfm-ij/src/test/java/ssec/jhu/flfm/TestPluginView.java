@@ -7,12 +7,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 import ij.ImagePlus;
-
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import java.awt.GraphicsEnvironment;
 
 public class TestPluginView {
 
@@ -21,9 +19,9 @@ public class TestPluginView {
   // Skip tests in CI environments to avoid GUI issues
   @BeforeAll
   static void skipInCI() {
-      if ("true".equals(System.getenv("CI"))) {
-          Assumptions.assumeTrue(false, "Skipping test in CI");
-      }
+    if ("true".equals(System.getenv("CI"))) {
+      Assumptions.assumeTrue(false, "Skipping test in CI");
+    }
   }
 
   @BeforeEach
