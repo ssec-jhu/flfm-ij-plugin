@@ -113,14 +113,14 @@
       <scope>test</scope>
     </dependency>
 
-  <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
-  <dependency>
-      <groupId>org.mockito</groupId>
-      <artifactId>mockito-core</artifactId>
-      <version>4.11.0</version>
-      <scope>test</scope>
-  </dependency>
-
+    <!-- https://mvnrepository.com/artifact/org.mockito/mockito-core -->
+    <dependency>
+        <groupId>org.mockito</groupId>
+        <artifactId>mockito-core</artifactId>
+        <version>4.11.0</version>
+        <scope>test</scope>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>
@@ -191,7 +191,6 @@
           <effort>Max</effort>
           <threshold>medium</threshold>
           <failOnError>true</failOnError>
-          <!-- <includeFilterFile>${session.executionRootDirectory}/spotbugs-security-include.xml</includeFilterFile> -->
           <excludeFilterFile>${session.executionRootDirectory}/config/spotbugs-security-exclude.xml</excludeFilterFile>
           <plugins>
               <plugin>
