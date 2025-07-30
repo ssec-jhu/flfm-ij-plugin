@@ -9,42 +9,38 @@
 
 ![SSEC-JHU Logo](docs/_static/SSEC_logo_horiz_blue_1152x263.png)
 
-Base repo template to be used by all others.
-
-Things to do when using this template:
-
- * Run ```python project_setup.py```
- * Uncomment above DOI in README.md and correct ``<insert_ID_number>``.
- * Correct "description" field in .zenodo.json to reflect description of child repo.
- * Correct the ``CI Status`` badge with the correct token in the URL.
- * Import package into https://readthedocs.org/.
- * Update [zenodo.json](zenodo.json). For more details see [zenodo.json docs](https://developers.zenodo.org/#representation) and [zenodo docs on contributors vs creators](https://help.zenodo.org/docs/deposit/describe-records/contributors/).
- * Update quickstart guide below.
-
-What's included in this template:
-
- * Licence file
- * Code of Conduct
- * Build & Setup, inc. ``pip`` dependency requirements.
- * Dependabot GitHub action
- * CI for GitHub actions: lint, pytest, build & publish docker image to GitHub Packages.
- * Dockerfile.
- * Pytest example(s).
- * Githooks.
+This is an ImageJ 1.x plugin wrapper for the SSEC
+[FLFM project](https://github.com/ssec-jhu/flfm). This project uses The
+[Deep Java Library](https://djl.ai/)(djl) to load the pytorch models from the FLFM
+project.
 
 # Quickstart Guide
 
-Add here, streamlined instructions on how to get the code running as swiftly as possible, and provide usage example(s).
-This shouldn't attempt to cover all OS's and/or build variations - just the canonical. Since users are most likely
-viewing this README from GitHub.com, assuming a repo context might be best, where instructions look like those below.
-Alternatively, if this package is distributed on PyPi, perhaps just ``pip install <package-name>``, followed by quick
-user instructions, will suffice.
+Get the latest `jar` file from `<release location>`. Choose the appropriate
+release according to your OS. It should be one of:
+ * `flfm_plugin.windows.jar`
+ * `flfm_plugin.linux.jar`
+ * `flfm_plugin.macos.jar` (not currently available)
 
-  * ``git clone https://github.com/ssec-jhu/flfm-ij-plugin.git``
-  * ``conda create -n flfm_ij_plugin python pip``
-  * ``conda activate flfm_ij_plugin``
-  * ``pip pinstall -e .``
-  * Add user instructions.
+Place the `jar` file into the `plugins` folder for you ImageJ installation.
+
+Open ImageJ and select `Plugins` from the top menu, then select `FLFM Plugin`.
+
+**ISSUES DETECTING GPU?**
+
+Sometimes there can be an issue with the detection of the GPU when running the
+plugin. There a couple things that you can do to fix this issue:
+
+1. Start ImageJ with the plugin jar on the classpath:
+  - Open a terminal in the directory of the ImageJ installation
+  - Linux:
+    - `./ImageJ -cp plugins/flfm_plugin.linux.jar`
+  - Windows:
+    - `ImageJ.exe plugins\flfm_plugin.windows.jar`
+2. Add the DJL cache to the `PATH` variable.
+ - Linux
+ - Windows
+
 
 # Installation, Build, & Run instructions
 
@@ -101,40 +97,28 @@ To be completed by child repo.
 
 
 # Testing
-_NOTE: The following steps require ``pip install -r requirements/dev.txt``._
-
-## Using tox
-
-* Run tox ``tox``. This will run all of linting, security, test, docs and package building within tox virtual environments.
-* To run an individual step, use ``tox -e {step}`` for example, ``tox -e test``, ``tox -e build-docs``, etc.
-
-Typically, the CI tests run in github actions will use tox to run as above. See also [ci.yml](https://github.com/ssec-jhu/flfm-ij-plugin/blob/main/.github/workflows/ci.yml).
-
-## Outside of tox:
-
-The below assume you are running steps without tox, and that all requirements are installed into a conda environment, e.g. with ``pip install -r requirements/all.txt``.
-
-_NOTE: Tox will run these for you, this is specifically if there is a requirement to setup environment and run these outside the purview of tox._
 
 ### Linting:
 Facilitates in testing typos, syntax, style, and other simple code analysis tests.
   * ``cd`` into repo dir.
-  * Switch/activate correct environment: ``conda activate <environment_name>``
-  * Run ``ruff .``
-  * This can be automatically run (recommended for devs) every time you ``git push`` by installing the provided
-    ``pre-push`` git hook available in ``./githooks``.
-    Instructions are in that file - just ``cp ./githooks/pre-push .git/hooks/;chmod +x .git/hooks/pre-push``.
+  * Use [Spotless](https://github.com/diffplug/spotless) to check code formatting:
+
+    ```mvn spotless:check --file flfm-ij/pom.xml```
+  * Use [Checkstyle](https://checkstyle.org/) for linting the code:
+
+    ```mvn checkstyle:check --file flfm-ij/pom.xml```
 
 ### Security Checks:
-Facilitates in checking for security concerns using [Bandit](https://bandit.readthedocs.io/en/latest/index.html).
+Facilitates in checking for security concerns using [SpotBugs](https://spotbugs.readthedocs.io/en/stable/index.html).
  * ``cd`` into repo dir.
- * ``bandit --severity-level=medium -r flfm_ij_plugin``
+ * ``mvn -B spotbugs:check --file flfm-ij/pom.xml``
 
 ### Unit Tests:
 Facilitates in testing core package functionality at a modular level.
   * ``cd`` into repo dir.
-  * Run all available tests: ``pytest .``
-  * Run specific test: ``pytest tests/test_util.py::test_base_dummy``.
+  * Run all available tests:
+
+    ```mvn clean test --file flfm-ij/pom.xml```
 
 ### Regression tests:
 Facilitates in testing whether core data results differ during development.
