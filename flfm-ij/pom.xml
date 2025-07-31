@@ -168,6 +168,11 @@
             <goals>
               <goal>report</goal> <!-- Generate report after tests -->
             </goals>
+            <configuration>
+              <excludes>
+                <exclude>**/model*.pt</exclude>
+              </excludes>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -328,7 +333,7 @@
                   <transformers>
                     <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                     <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                      <mainClass>ssec.jhu.flfm.PluginUI</mainClass>
+                      <mainClass>ssec.jhu.flfm.PluginView</mainClass>
                     </transformer>
                   </transformers>
                 </configuration>
@@ -387,7 +392,7 @@
                   <transformers>
                     <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
                     <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                      <mainClass>ssec.jhu.flfm.PluginUI</mainClass>
+                      <mainClass>ssec.jhu.flfm.PluginView</mainClass>
                     </transformer>
                   </transformers>
                 </configuration>
