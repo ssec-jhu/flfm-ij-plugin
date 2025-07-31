@@ -30,7 +30,7 @@ Open ImageJ and select `Plugins` from the top menu, then select `FLFM Plugin`.
 
 > [!TIP]
 > ISSUES DETECTING GPU?
-> Sometimes there can be an issue with the detection of the GPU when running the 
+> Sometimes there can be an issue with the detection of the GPU when running the
 > plugin. There a couple things that you can do to fix this issue:
 >1. Start ImageJ with the plugin jar on the classpath:
 >  - Open a terminal in the directory of the ImageJ installation
@@ -40,7 +40,7 @@ Open ImageJ and select `Plugins` from the top menu, then select `FLFM Plugin`.
 >    - `ImageJ.exe -cp plugins\flfm_plugin.windows.jar`
 >2. Add the DJL cache to the `PATH` variable. The DJL library will download\extract
 >   the required libraries to run the FLFM pytorch code to the DJL cache location.
->   This can be set manually by following the DJL 
+>   This can be set manually by following the DJL
 >   [documentation](https://docs.djl.ai/master/docs/development/cache_management.html#resource-caches)
 >   The default location is something like:
 > - Linux:
@@ -52,23 +52,49 @@ Open ImageJ and select `Plugins` from the top menu, then select `FLFM Plugin`.
 
 ### Build:
 
-Building the Plugin's jar file is dependent on getting exported pytorch
-functions from the [FLFM python package](https://github.com/ssec-jhu/flfm). The
-compiled model files go into the the `flfm-ij/src/main/resources/models`
-directory.
+To build the project requires two steps:
+1. Use the FLFM python package to export model files for all desired iterations
+   (current [1-15]).
+2. Build the Java plugin using Maven with the model files copied into the
+   `src/main/resources/models` directory.
 
-  #### with Docker:
+For convenience, the make file will do all of this for you, but you need to have
+the following prerequisites installed:
+* `conda`
+* `maven`
+
+  #### Docker:
   (TODO)
 
-  #### with Maven locally:
-  
+  #### Locally:
+  1. Clone the repository:
+     ```bash
+     git clone https://github.com/ssec-jhu/flfm-ij-plugin.git
+     ```
+  2. Change into the repository directory:
+     ```bash
+      cd flfm-ij-plugin
+      ```
+  3. Run the make command:
+      ```bash
+      make linux
+      ```
+      or
+      ```bash
+      make windows
+      ```
+
+If you need to rebuild the project it is recommended to clean the project first:
+```bash
+make clean
+```
 
 ### Run
 
-  #### with Docker:
+  #### Docker:
   (TODO)
 
-  #### with Maven locally:
+  #### Locally:
   (TODO)
 
 ### Usage:
