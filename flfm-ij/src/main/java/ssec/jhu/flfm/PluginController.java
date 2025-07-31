@@ -13,6 +13,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.Optional;
 import java.util.concurrent.ExecutorService;
@@ -107,6 +108,15 @@ public class PluginController implements ActionListener {
             this.modelLocations = new String[] {}; // Default to an empty array if no models found
           }
 
+          Arrays.sort(
+              this.modelLocations,
+              (path1, path2) -> {
+                // Sort by iteration number extracted from the file name
+                int iter1 = Integer.parseInt(path1.replaceAll("[^0-9]", ""));
+                int iter2 = Integer.parseInt(path2.replaceAll("[^0-9]", ""));
+                return Integer.compare(iter1, iter2);
+              });
+
           logger.debug("Found {} model locations", this.modelLocations.length);
 
           if (this.modelLocations != null && this.modelLocations.length > 0) {
@@ -115,7 +125,6 @@ public class PluginController implements ActionListener {
                     .map(path -> path.replaceAll("[^0-9]", ""))
                     .filter(path -> !path.isEmpty())
                     .distinct()
-                    .sorted()
                     .map(String::valueOf)
                     .toArray(String[]::new);
 
