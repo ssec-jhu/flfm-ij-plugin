@@ -11,7 +11,7 @@
 
 This is an ImageJ 1.x plugin wrapper for the SSEC
 [FLFM project](https://github.com/ssec-jhu/flfm). This project uses The
-[Deep Java Library](https://djl.ai/)(djl) to load the pytorch models from the FLFM
+[Deep Java Library](https://djl.ai/)(djl) to load the pytorch models exported from the FLFM
 project.
 
 # Quickstart Guide
