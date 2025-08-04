@@ -1,42 +1,61 @@
-.PHONY: clean linux windows
+.PHONY: all clean clean-models flfm-py linux models windows
+.DEFAULT_GOAL: linux
 
-MODEL_FILES := $(addprefix models/model,$(addsuffix .pt,$(shell seq 1 15)))
-JAR_MODEL_FILES := $(addprefix flfm-ij/src/main/resources/models/model,$(addsuffix .pt,$(shell seq 1 15)))
+MODEL_FILES := $(addprefix flfm-ij/src/main/resources/models/model,$(addsuffix .pt,$(shell seq 1 15)))
+
+all: clean-models linux windows
+
+help:
+	@echo "Makefile targets:"
+	@echo "all -> Regenerate the model files and build the linux and windows jar files"
+	@echo "flfm-py -> installs the the flfm python package into a python env in the build directory"
+	@echo "models -> remove any existing models and generate them again"
+	@echo "windows -> build the windows jar file for distribution"
+	@echo "linux -> build the linux jar file for distribution"
+	@echo "clean -> remove all model files and contents of build directory"
 
 # Create a python environment and install dependencies This will create a conda
 # environment in the ./env directory and install the necessary packages for
 # FLFM.
-env/bin/python:
+build/env/bin/python:
 	@echo "Creating conda environment..."
-	micromamba create -y --prefix ./env python=3.11
-	micromamba run -p ./env python -m pip install git+https://github.com/ssec-jhu/flfm.git
+	micromamba create -y --prefix build/env python=3.11
 
-# Export Model files using the python package
-models/model%.pt: env/bin/python
+# Install the python FLFM package to generate the model files used in the jar file
+flfm-py: build/env/bin/python
+	@echo "Installing the FLFM python package"
+	micromamba run -p build/env python -m pip install --force-reinstall git+https://github.com/ssec-jhu/flfm.git
+
+# Build the model files and place them in the models dir in the source treee
+flfm-ij/src/main/resources/models/model%.pt: flfm-py
 	@echo "Exporting $@"
 	mkdir -p models
-	micromamba run -p ./env python -m flfm.cli export --out $@ --n_steps $*
+	micromamba run -p build/env python -m flfm.cli export --out $@ --n_steps $*
 
-# Copy the model files into the source tree
-flfm-ij/src/main/resources/models/model%.pt: $(MODEL_FILES)
-	@echo "Copying $< to $@"
-	mkdir -p $(dir $@)
-	cp $< $@
+# remove the current model files and then generate them again
+models: clean-models $(MODEL_FILES)
 
-# Make the linux based JAR file
-flfm-ij/target/flfm_plugin.linux.jar: $(JAR_MODEL_FILES)
+# generate the windows jar file
+windows: $(MODEL_FILES)
+	mvn package -f flfm-ij/pom.xml -P windows-cudas
+
+# Generate the linux jar file
+linux: $(MODEL_FILES)
 	mvn package -f flfm-ij/pom.xml -P linux-cuda
 
-# Make the windows based JAR file
-flfm-ij/target/flfm_plugin.windows.jar: $(JAR_MODEL_FILES)
-	mvn package -f flfm-ij/pom.xml -P windows-cuda
+# remove model files
+clean-models:
+	@echo "Removing model files"
+	@for file in $(MODEL_FILES); do \
+		if [ -e "$$file" ]; then \
+			rm "$$file"; \
+		fi \
+	done
 
-# convience target for the linux JAR
-linux: flfm-ij/target/flfm_plugin.linux.jar
-
-# convience target for the windows JAR
-windows: flfm-ij/target/flfm_plugin.windows.jar
-
-# clean the target directory containing previously built JAR files
-clean:
+# remove all build files
+clean: clean-models
 	mvn clean -f flfm-ij/pom.xml
+	if [ -e build/env ]; then \
+		micromamba env remove -y -p build/env; \
+	fi
+	rm -rf ./build
