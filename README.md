@@ -9,132 +9,121 @@
 
 ![SSEC-JHU Logo](docs/_static/SSEC_logo_horiz_blue_1152x263.png)
 
-Base repo template to be used by all others.
-
-Things to do when using this template:
-
- * Run ```python project_setup.py```
- * Uncomment above DOI in README.md and correct ``<insert_ID_number>``.
- * Correct "description" field in .zenodo.json to reflect description of child repo.
- * Correct the ``CI Status`` badge with the correct token in the URL.
- * Import package into https://readthedocs.org/.
- * Update [zenodo.json](zenodo.json). For more details see [zenodo.json docs](https://developers.zenodo.org/#representation) and [zenodo docs on contributors vs creators](https://help.zenodo.org/docs/deposit/describe-records/contributors/).
- * Update quickstart guide below.
-
-What's included in this template:
-
- * Licence file
- * Code of Conduct
- * Build & Setup, inc. ``pip`` dependency requirements.
- * Dependabot GitHub action
- * CI for GitHub actions: lint, pytest, build & publish docker image to GitHub Packages.
- * Dockerfile.
- * Pytest example(s).
- * Githooks.
+This is an ImageJ 1.x plugin wrapper for the SSEC
+[FLFM project](https://github.com/ssec-jhu/flfm). This project uses The
+[Deep Java Library](https://djl.ai/)(djl) to load the pytorch models exported from the FLFM
+project.
 
 # Quickstart Guide
 
-Add here, streamlined instructions on how to get the code running as swiftly as possible, and provide usage example(s).
-This shouldn't attempt to cover all OS's and/or build variations - just the canonical. Since users are most likely
-viewing this README from GitHub.com, assuming a repo context might be best, where instructions look like those below.
-Alternatively, if this package is distributed on PyPi, perhaps just ``pip install <package-name>``, followed by quick
-user instructions, will suffice.
+Get the latest `jar` file from `<release location>`. Choose the appropriate
+release according to your OS. It should be one of:
+ * `flfm_plugin.windows.jar`
+ * `flfm_plugin.linux.jar`
+ * `flfm_plugin.macos.jar` (not currently available)
 
-  * ``git clone https://github.com/ssec-jhu/flfm-ij-plugin.git``
-  * ``conda create -n flfm_ij_plugin python pip``
-  * ``conda activate flfm_ij_plugin``
-  * ``pip pinstall -e .``
-  * Add user instructions.
+Place the `jar` file into the `plugins` folder for you ImageJ installation.
+
+Open ImageJ and select `Plugins` from the top menu, then select `FLFM Plugin`.
+
+
+
+> [!TIP]
+> ISSUES DETECTING GPU?
+> Sometimes there can be an issue with the detection of the GPU when running the
+> plugin. There a couple things that you can do to fix this issue:
+>1. Start ImageJ with the plugin jar on the classpath:
+>  - Open a terminal in the directory of the ImageJ installation
+>  - Linux:
+>    - `./ImageJ -cp plugins/flfm_plugin.linux.jar`
+>  - Windows:
+>    - `ImageJ.exe -cp plugins\flfm_plugin.windows.jar`
+>2. Add the DJL cache to the `PATH` variable. The DJL library will download\extract
+>   the required libraries to run the FLFM pytorch code to the DJL cache location.
+>   This can be set manually by following the DJL
+>   [documentation](https://docs.djl.ai/master/docs/development/cache_management.html#resource-caches)
+>   The default location is something like:
+> - Linux:
+>   - `~/.djl.ai/pytorch/2.5.2-cu124-linux-x86_64/`
+> - Windows:
+>   - `C:\Users\<username>\.djl.ai\pytorch\2.5.1-cu124-win-x86_64\`
 
 # Installation, Build, & Run instructions
 
-IJ notes:
-- You need to start IJ with the classpath to the plugin jar
-`./ImageJ -cp plugins/flfm_plugin.linux.jar`
-- You need to add the djl cache to the path if it can't find your GPU
-This can be usually found at `~/.djl.ai/pytorch/2.5.2-cu124-linux-x86_64/`
-or `C:\Users\<username>\.djl.ai\pytorch\2.5.1-cu124-win-x86_64\`
-
-### Conda:
-
-For additional cmds see the [Conda cheat-sheet](https://docs.conda.io/projects/conda/en/4.6.0/_downloads/52a95608c49671267e40c689e0bc00ca/conda-cheatsheet.pdf).
-
- * Download and install either [miniconda](https://docs.conda.io/en/latest/miniconda.html#installing) or [anaconda](https://docs.anaconda.com/free/anaconda/install/index.html).
- * Create new environment (env) and install ``conda create -n <environment_name>``
- * Activate/switch to new env ``conda activate <environment_name>``
- * ``cd`` into repo dir.
- * Install ``python`` and ``pip`` ``conda install python=3.11 pip``
- * Install all required dependencies (assuming local dev work), there are two ways to do this
-   * If working with tox (recommended) ``pip install -r requirements/dev.txt``.
-   * If you would like to setup an environment with all requirements to run outside of tox ``pip install -r requirements/all.txt``.
-
 ### Build:
 
-  #### with Docker:
-  * Download & install Docker - see [Docker install docs](https://docs.docker.com/get-docker/).
-  * ``cd`` into repo dir.
-  * Build image: ``docker build -t <image_name> .``
+To build the project requires two steps:
+1. Use the FLFM python package to export model files for all desired iterations
+   (current [1-15]).
+2. Build the Java plugin using Maven with the model files copied into the
+   `src/main/resources/models` directory.
 
-  #### with Python ecosystem:
-  * ``cd`` into repo dir.
-  * ``conda activate <environment_name>``
-  * Build and install package in <environment_name> conda env: ``pip install .``
-  * Do the same but in dev/editable mode (changes to repo will be reflected in env installation upon python kernel restart)
-    _NOTE: This is the preferred installation method for dev work._
-    ``pip install -e .``.
-    _NOTE: If you didn't install dependencies from ``requirements/dev.txt``, you can install
-    a looser constrained set of deps using: ``pip install -e .[dev]``._
+For convenience, the make file will do all of this for you, but you need to have
+the following prerequisites installed:
+* `conda`
+* `maven`
+
+  #### Docker:
+  (TODO)
+
+  #### Locally:
+  1. Clone the repository:
+     ```bash
+     git clone https://github.com/ssec-jhu/flfm-ij-plugin.git
+     ```
+  2. Change into the repository directory:
+     ```bash
+      cd flfm-ij-plugin
+      ```
+  3. Run the make command:
+      ```bash
+      make linux
+      ```
+      or
+      ```bash
+      make windows
+      ```
+
+If you need to rebuild the project it is recommended to clean the project first:
+```bash
+make clean
+```
 
 ### Run
 
-  #### with Docker:
-  * Follow the above [Build with Docker instructions](#with-docker).
-  * Run container from image: ``docker run -d -p 8000:8000 <image_name>``. _NOTE: ``-p 8000:8000`` is specific to the example application using port 8000._
-  * Alternatively, images can be pulled from ``ghcr.io/ssec-jhu/`` e.g., ``docker pull ghcr.io/flfm-ij-plugin:pr-1``.
+  #### Docker:
+  (TODO)
 
-  #### with Python ecosystem:
-  * Follow the above [Build with Python ecosystem instructions](#with-python-ecosystem).
-  * Run ``uvicorn flfm_ij_plugin.app.main:app --host 0.0.0.0 --port", "8000``. _NOTE: This is just an example and is obviously application dependent._
+  #### Locally:
+  (TODO)
 
 ### Usage:
-To be completed by child repo.
+(TODO)
 
 
 # Testing
-_NOTE: The following steps require ``pip install -r requirements/dev.txt``._
-
-## Using tox
-
-* Run tox ``tox``. This will run all of linting, security, test, docs and package building within tox virtual environments.
-* To run an individual step, use ``tox -e {step}`` for example, ``tox -e test``, ``tox -e build-docs``, etc.
-
-Typically, the CI tests run in github actions will use tox to run as above. See also [ci.yml](https://github.com/ssec-jhu/flfm-ij-plugin/blob/main/.github/workflows/ci.yml).
-
-## Outside of tox:
-
-The below assume you are running steps without tox, and that all requirements are installed into a conda environment, e.g. with ``pip install -r requirements/all.txt``.
-
-_NOTE: Tox will run these for you, this is specifically if there is a requirement to setup environment and run these outside the purview of tox._
 
 ### Linting:
 Facilitates in testing typos, syntax, style, and other simple code analysis tests.
   * ``cd`` into repo dir.
-  * Switch/activate correct environment: ``conda activate <environment_name>``
-  * Run ``ruff .``
-  * This can be automatically run (recommended for devs) every time you ``git push`` by installing the provided
-    ``pre-push`` git hook available in ``./githooks``.
-    Instructions are in that file - just ``cp ./githooks/pre-push .git/hooks/;chmod +x .git/hooks/pre-push``.
+  * Use [Spotless](https://github.com/diffplug/spotless) to check code formatting:
+
+    ```mvn spotless:check --file flfm-ij/pom.xml```
+  * Use [Checkstyle](https://checkstyle.org/) for linting the code:
+
+    ```mvn checkstyle:check --file flfm-ij/pom.xml```
 
 ### Security Checks:
-Facilitates in checking for security concerns using [Bandit](https://bandit.readthedocs.io/en/latest/index.html).
+Facilitates in checking for security concerns using [SpotBugs](https://spotbugs.readthedocs.io/en/stable/index.html).
  * ``cd`` into repo dir.
- * ``bandit --severity-level=medium -r flfm_ij_plugin``
+ * ``mvn -B spotbugs:check --file flfm-ij/pom.xml``
 
 ### Unit Tests:
 Facilitates in testing core package functionality at a modular level.
   * ``cd`` into repo dir.
-  * Run all available tests: ``pytest .``
-  * Run specific test: ``pytest tests/test_util.py::test_base_dummy``.
+  * Run all available tests:
+
+    ```mvn clean test --file flfm-ij/pom.xml```
 
 ### Regression tests:
 Facilitates in testing whether core data results differ during development.
