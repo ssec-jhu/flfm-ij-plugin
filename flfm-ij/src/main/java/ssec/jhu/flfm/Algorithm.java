@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -142,23 +143,7 @@ public class Algorithm {
       NDArray inputArray = ArrayUtils.convertImageToArray(inputImage, manager);
       psfArray.divi(psfArray.sum()); // Normalize PSF
 
-      // Define a safe base directory for models, This prevents path traversal attacks.
-      Path baseDir = Paths.get("models").toAbsolutePath().normalize();
-      Path modelPath = baseDir.resolve(modelPathStr).normalize();
-      if (!modelPath.startsWith(baseDir)) {
-        logger.error("Potential path traversal attempt detected: " + modelPathStr);
-        return null;
-      }
-
-      Path modelPathName = modelPath.getFileName();
-
-      String modelName;
-      if (modelPathName != null) {
-        modelName = modelPathName.toString();
-      } else {
-        logger.error("modelPath.getFileName() returned null for path: " + modelPath);
-        return null;
-      }
+      String modelName = FilenameUtils.getName(modelPathStr);
 
       try (Model model = Model.newInstance(modelName, "PyTorch")) {
         try {
@@ -167,13 +152,24 @@ public class Algorithm {
           // directory if it's being run as a packaged JAR.
           ClassLoader classLoader = ClassLoaderUtils.getContextClassLoader();
           InputStream modelStream = classLoader.getResourceAsStream("models/" + modelPathStr);
+          // Load the model from the stream:
           if (modelStream != null) {
             // If the model is found in the resources, load it from the stream
             logger.debug("Loading model from resources: " + modelPathStr);
             model.load(modelStream);
+            // Load the model from the file system.
           } else {
-            logger.debug("Loading model " + modelName + " from: " + modelPath.getParent());
-            model.load(modelPath.getParent());
+            // Define a safe base directory for models, This prevents path traversal attacks.
+            // This path will likely be used in the IDE
+            Path baseDir =
+                Paths.get("flfm-ij/src/main/resources/models").toAbsolutePath().normalize();
+            Path resolvedModelPath = baseDir.resolve(modelName).normalize();
+            if (!resolvedModelPath.startsWith(baseDir)) {
+              logger.error("Potential path traversal attempt detected: " + modelPathStr);
+              return null;
+            }
+            logger.debug("Loading model " + modelName + " from: " + modelPathStr);
+            model.load(resolvedModelPath);
           }
         } catch (IOException | MalformedModelException e) {
           logger.debug("Error loading model: " + e.getMessage());
