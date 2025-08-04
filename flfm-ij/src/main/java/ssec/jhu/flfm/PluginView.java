@@ -2,7 +2,6 @@ package ssec.jhu.flfm;
 
 import ij.ImagePlus;
 import ij.gui.GUI;
-import ij.plugin.Text;
 import ij.plugin.frame.PlugInFrame;
 import java.awt.Button;
 import java.awt.Choice;
@@ -14,8 +13,6 @@ import java.awt.TextField;
 import java.awt.event.ActionListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.puppycrawl.tools.checkstyle.checks.naming.ConstantNameCheck;
 
 public class PluginView extends PlugInFrame {
 
@@ -105,7 +102,8 @@ public class PluginView extends PlugInFrame {
     gbc.gridx = 1;
     gbc.gridy = row;
     gbc.gridwidth = 1;
-    this.textFieldCenterY = addTextField(this, String.valueOf(Constants.DEFAULT_CENTER_Y), gbc, true);
+    this.textFieldCenterY =
+        addTextField(this, String.valueOf(Constants.DEFAULT_CENTER_Y), gbc, true);
 
     gbc.gridx = 2;
     gbc.gridy = row;
@@ -115,7 +113,8 @@ public class PluginView extends PlugInFrame {
     gbc.gridx = 3;
     gbc.gridy = row;
     gbc.gridwidth = 1;
-    this.textFieldCenterX = addTextField(this, String.valueOf(Constants.DEFAULT_CENTER_X), gbc, true);
+    this.textFieldCenterX =
+        addTextField(this, String.valueOf(Constants.DEFAULT_CENTER_X), gbc, true);
 
     gbc.gridx = 4;
     gbc.gridy = row;
@@ -126,7 +125,6 @@ public class PluginView extends PlugInFrame {
     gbc.gridy = row;
     gbc.gridwidth = 1;
     this.textFieldRadius = addTextField(this, String.valueOf(Constants.DEFAULT_RADIUS), gbc, true);
-
 
     row++;
     logger.debug("Initializing Iterations Label");
@@ -152,7 +150,6 @@ public class PluginView extends PlugInFrame {
     gbc.gridy = row;
     gbc.gridwidth = 4;
     this.btnCalculate = addButton(this, Constants.BTN_CALCULATE, gbc, this.pluginController);
-
 
     logger.debug("Finished initializing UI components");
   }
