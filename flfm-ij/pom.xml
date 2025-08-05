@@ -257,7 +257,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.14.0</version>
         <configuration>
-          <source>${maven.compiler.sourcse}</source>
+          <source>${maven.compiler.source}</source>
           <target>${maven.compiler.target}</target>
           <debug>false</debug> <!-- Set to true if you want debug symbols in the compiled classes -->
           <debugLevel>lines,vars,source</debugLevel>

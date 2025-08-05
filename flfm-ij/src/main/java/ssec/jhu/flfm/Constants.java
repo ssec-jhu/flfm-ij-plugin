@@ -21,4 +21,7 @@ public class Constants {
 
   public static final String PT_ENGINE_CLASS = "ai.djl.pytorch.engine.PtEngineProvider";
   public static final String BTN_WORKING = "Working...";
+  public static final int DEFAULT_CENTER_X = 1000;
+  public static final int DEFAULT_CENTER_Y = 980;
+  public static final int DEFAULT_RADIUS = 230;
 }

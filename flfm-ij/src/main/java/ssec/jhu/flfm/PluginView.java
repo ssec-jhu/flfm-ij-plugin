@@ -29,6 +29,9 @@ public class PluginView extends PlugInFrame {
   protected Choice deviceChoice;
   protected TextField textFieldPsf;
   protected TextField textFieldInput;
+  protected TextField textFieldCenterX;
+  protected TextField textFieldCenterY;
+  protected TextField textFieldRadius;
 
   public PluginView() {
     this("PluginUI");
@@ -90,20 +93,60 @@ public class PluginView extends PlugInFrame {
     this.textFieldInput = addTextField(this, Constants.LBL_NO_INPUT, gbc, false);
 
     row++;
-    logger.debug("Initializing Model Choice");
+    logger.debug("Initializing Iterations Label");
     gbc.gridx = 0;
+    gbc.gridy = row;
+    gbc.gridwidth = 1;
+    addLabel(this, "Center y:", gbc);
+
+    gbc.gridx = 1;
+    gbc.gridy = row;
+    gbc.gridwidth = 1;
+    this.textFieldCenterY =
+        addTextField(this, String.valueOf(Constants.DEFAULT_CENTER_Y), gbc, true);
+
+    gbc.gridx = 2;
+    gbc.gridy = row;
+    gbc.gridwidth = 1;
+    addLabel(this, "Center x:", gbc);
+
+    gbc.gridx = 3;
+    gbc.gridy = row;
+    gbc.gridwidth = 1;
+    this.textFieldCenterX =
+        addTextField(this, String.valueOf(Constants.DEFAULT_CENTER_X), gbc, true);
+
+    gbc.gridx = 4;
+    gbc.gridy = row;
+    gbc.gridwidth = 1;
+    addLabel(this, "Radius:", gbc);
+
+    gbc.gridx = 5;
+    gbc.gridy = row;
+    gbc.gridwidth = 1;
+    this.textFieldRadius = addTextField(this, String.valueOf(Constants.DEFAULT_RADIUS), gbc, true);
+
+    row++;
+    logger.debug("Initializing Iterations Label");
+    gbc.gridx = 0;
+    gbc.gridy = row;
+    gbc.gridwidth = 1;
+    addLabel(this, Constants.LBL_ITERATIONS, gbc);
+
+    logger.debug("Initializing Model Choice");
+    gbc.gridx = 1;
     gbc.gridy = row;
     gbc.gridwidth = 1;
     this.iterationChoice = addChoice(this, PluginView.placeholder, gbc);
 
     logger.debug("Initializing Device Choice");
-    gbc.gridx = 1;
+    gbc.gridx = 2;
     gbc.gridy = row;
     gbc.gridwidth = 1;
     this.deviceChoice = addChoice(this, PluginView.placeholder, gbc);
 
     logger.debug("Initializing Calculate Button");
-    gbc.gridx = 2;
+    gbc.gridx = 3;
     gbc.gridy = row;
     gbc.gridwidth = 4;
     this.btnCalculate = addButton(this, Constants.BTN_CALCULATE, gbc, this.pluginController);
@@ -168,6 +211,33 @@ public class PluginView extends PlugInFrame {
     }
 
     this.repaint();
+  }
+
+  public int getCenterX() {
+    try {
+      return Integer.parseInt(this.textFieldCenterX.getText());
+    } catch (NumberFormatException e) {
+      logger.error("Invalid Center X value: {}", this.textFieldCenterX.getText(), e);
+      return Constants.DEFAULT_CENTER_X;
+    }
+  }
+
+  public int getCenterY() {
+    try {
+      return Integer.parseInt(this.textFieldCenterY.getText());
+    } catch (NumberFormatException e) {
+      logger.error("Invalid Center Y value: {}", this.textFieldCenterY.getText(), e);
+      return Constants.DEFAULT_CENTER_Y;
+    }
+  }
+
+  public int getRadius() {
+    try {
+      return Integer.parseInt(this.textFieldRadius.getText());
+    } catch (NumberFormatException e) {
+      logger.error("Invalid Radius value: {}", this.textFieldRadius.getText(), e);
+      return Constants.DEFAULT_RADIUS;
+    }
   }
 
   public int getSelectedIterationIndex() {

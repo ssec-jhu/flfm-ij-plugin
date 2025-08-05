@@ -1,6 +1,9 @@
 package ssec.jhu.flfm;
 
 import ij.ImagePlus;
+import ij.gui.OvalRoi;
+import ij.gui.Roi;
+import ij.process.ImageProcessor;
 import java.awt.Button;
 import java.awt.Component;
 import java.awt.EventQueue;
@@ -149,9 +152,12 @@ public class PluginController implements ActionListener {
           final ImagePlus[] processedImage = new ImagePlus[1];
 
           ClassLoader originalClassLoader = Thread.currentThread().getContextClassLoader();
+          ImagePlus tmpImage = null;
+
+          // Step 1: Run the algoritm with the selected model and device
           try {
             Thread.currentThread().setContextClassLoader(PluginController.class.getClassLoader());
-            processedImage[0] =
+            tmpImage =
                 Algorithm.runModel(selectedModel, selectedDevice, this.psfImage, this.inputImage);
           } catch (Exception e) {
             logger.error("Error occurred while running model: {}", e.getMessage());
@@ -160,6 +166,23 @@ public class PluginController implements ActionListener {
             Thread.currentThread().setContextClassLoader(originalClassLoader);
           }
 
+          // Step 2: Crop and apply a circle mask
+          if (tmpImage != null) {
+            try {
+              int centerX = pluginView.getCenterX();
+              int centerY = pluginView.getCenterY();
+              int radius = pluginView.getRadius();
+
+              tmpImage =
+                  cropImage(tmpImage, centerX - radius, centerY - radius, radius * 2, radius * 2);
+              tmpImage = applyCircleMask(tmpImage, radius, radius, radius * 2);
+            } catch (Exception ex) {
+              logger.error("Error during cropping or masking: {}", ex.getMessage());
+              ex.printStackTrace();
+            }
+          }
+
+          processedImage[0] = tmpImage;
           EventQueue.invokeLater(() -> pluginView.endProcessedImage(processedImage[0]));
         });
   }
@@ -209,6 +232,63 @@ public class PluginController implements ActionListener {
       return ij.WindowManager.getImage(selectedTitle);
     }
     return null;
+  }
+  // ===========================================================================
+
+  // Image Processing Methods ==================================================
+
+  protected static ImagePlus cropImage(ImagePlus image, int x, int y, int width, int height) {
+    logger.debug(
+        "Cropping image stack at ({}, {}) with width {} and height {}", x, y, width, height);
+
+    int stackSize = image.getStackSize();
+    ij.ImageStack croppedStack = new ij.ImageStack(width, height);
+
+    for (int i = 1; i <= stackSize; i++) {
+      image.setSlice(i);
+      Roi roi = new Roi(x, y, width, height);
+      image.setRoi(roi);
+      ImageProcessor croppedProcessor = image.getProcessor().crop();
+      croppedStack.addSlice(image.getStack().getSliceLabel(i), croppedProcessor);
+    }
+
+    ImagePlus croppedImage = new ImagePlus("croppedImage", croppedStack);
+    return croppedImage;
+  }
+
+  protected static ImagePlus applyCircleMask(
+      ImagePlus image, int centerX, int centerY, int diameter) {
+    logger.debug(
+        "Applying circle mask to stack at center ({}, {}) with diameter {}",
+        centerX,
+        centerY,
+        diameter);
+    int stackSize = image.getStackSize();
+    int width = image.getWidth();
+    int height = image.getHeight();
+    ij.ImageStack maskedStack = new ij.ImageStack(width, height);
+
+    // Create the mask once
+    OvalRoi circleRoi =
+        new OvalRoi(centerX - diameter / 2, centerY - diameter / 2, diameter, diameter);
+
+    for (int i = 1; i <= stackSize; i++) {
+      image.setSlice(i);
+      image.setRoi(circleRoi);
+      ImageProcessor ip = image.getProcessor().duplicate();
+
+      for (int y = 0; y < ip.getHeight(); y++) {
+        for (int x = 0; x < ip.getWidth(); x++) {
+          if (!circleRoi.contains(x, y)) {
+            ip.putPixel(x, y, 0); // Set pixel to black if outside the circle
+          }
+        }
+      }
+      maskedStack.addSlice(image.getStack().getSliceLabel(i), ip);
+    }
+
+    ImagePlus maskedImage = new ImagePlus("maskedImage", maskedStack);
+    return maskedImage;
   }
   // ===========================================================================
 
