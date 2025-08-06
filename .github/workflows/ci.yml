@@ -73,9 +73,9 @@ jobs:
           java-version: '8'
           cache: 'maven'
       - name: Build JAR
-        run: mvn -B package --file flfm-ij/pom.xml
+        run: mvn -B package -Dapp.version=${{ github.ref_name }}-SNAPSHOT --file flfm-ij/pom.xml
       - name: Upload JAR to GitHub Packages
-        run: mvn --batch-mode deploy --file flfm-ij/pom.xml
+        run: mvn --batch-mode deploy -Dapp.version=${{ github.ref_name }}-SNAPSHOT --file flfm-ij/pom.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 

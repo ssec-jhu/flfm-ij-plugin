@@ -6,19 +6,20 @@
 
   <groupId>ssec.jhu.edu</groupId>
   <artifactId>flfm</artifactId>
-  <!-- TODO: make this dynamic-->
-  <version>1.0-SNAPSHOT</version>
+  <version>${app.version}</version>
   <name>FLFM</name>
   <url>https://github.com/ssec-jhu/flfm-ij-plugin</url>
   <description>This is an ImageJ 1.x plugin wrapper for the JHU SSEC FLFM (https://github.com/ssec-jhu/flfm) project.</description>
 
   <!-- This needs to be 1.8 to work with ImageJ 1.x -->
   <properties>
+    <app.version>1.0.0-SNAPSHOT</app.version>
     <maven.compiler.source>1.8</maven.compiler.source>
     <maven.compiler.target>1.8</maven.compiler.target>
     <djl.version>0.32.0</djl.version>
     <org.checkstyle.google.severity>error</org.checkstyle.google.severity>
   </properties>
+
 
   <!-- This is the BOM used for DJL versioning: https://docs.djl.ai/master/bom/index.html-->
   <dependencyManagement>
