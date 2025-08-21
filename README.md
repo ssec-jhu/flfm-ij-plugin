@@ -95,7 +95,7 @@ helpful for debugging and testing, but functional nonetheless.
 
 #### ImageJ 1.x Plugin
 
-To run this in ImageJ 1.x, copy the `.jar` for your OS 
+To run this in ImageJ 1.x, copy the `.jar` for your OS
 `flfm_plugin.<linux|windows>.jar` into the `plugins` folder in your ImageJ
 installation, then start ImageJ.
 
@@ -107,14 +107,14 @@ Using Java 8, the jar can be run directly using:
 java -jar flfm_plugin.<linux|windows>.jar
 ```
 
-Where `<linux|window>` should be replaced with the OS your running it on.
+Where `<linux|window>` should be replaced with the OS you're running it on.
 
 ### Usage:
 
 The standalone jar opens directly to the FLFM PLugin UI, if it's being run as
-an ImageJ plugin there is single step to get to the plugin.
+an ImageJ plugin there is a single step to get to the plugin.
 
-Open ImageJ and select from the *Plugins* menu select `FLFM Plugin`:
+Open ImageJ and from the *Plugins* menu select `FLFM Plugin`:
 
 ![imagej-plugin-select](docs/_static/imagej_plugin_menu.png)
 
@@ -128,13 +128,13 @@ To use the plugin populate the fields with the desired values and click **Calcul
 
 **NOTE on image selection**
 
-When you try to select an image, the Plugin will first try to get an image 
+When you try to select an image, the Plugin will first try to get an image
 already opened in ImageJ with the following menu popping up:
 
 ![plugin-img-selector](docs/_static/plugin_ui_img_selector.png)
 
 If the plugin doesn't detect any open ImageJ images or if you close the menu,
-then the plugin will open a file selector menu to select an image from disk.
+the plugin will open a file selector menu to select an image from disk.
 
 # Testing
 
