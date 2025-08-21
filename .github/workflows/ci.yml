@@ -75,6 +75,13 @@ jobs:
       - name: clean PR ref name
         run: |
           echo "CLEAN_REF_NAME=${{ github.ref_name }}" | sed 's/\//-/g' >> $GITHUB_ENV
+      - name: setup conda
+        uses: conda-incubator/setup-miniconda@v3
+        with:
+            auto-activate-base: false
+      - name: build models
+        run: |
+          make models
       - name: Build JAR
         run: mvn -B package -Dapp.version=${{ env.CLEAN_REF_NAME }}-SNAPSHOT --file flfm-ij/pom.xml
       - name: Upload JAR to GitHub Packages

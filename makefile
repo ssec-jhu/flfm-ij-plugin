@@ -37,7 +37,7 @@ models: clean-models $(MODEL_FILES)
 
 # generate the windows jar file
 windows: $(MODEL_FILES)
-	mvn package -f flfm-ij/pom.xml -P windows-cudas
+	mvn package -f flfm-ij/pom.xml -P windows-cuda
 
 # Generate the linux jar file
 linux: $(MODEL_FILES)
