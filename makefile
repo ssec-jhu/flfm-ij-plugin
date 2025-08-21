@@ -19,18 +19,18 @@ help:
 # FLFM.
 build/env/bin/python:
 	@echo "Creating conda environment..."
-	micromamba create -y --prefix build/env python=3.11
+	conda create -y --prefix build/env python=3.11
 
 # Install the python FLFM package to generate the model files used in the jar file
 flfm-py: build/env/bin/python
 	@echo "Installing the FLFM python package"
-	micromamba run -p build/env python -m pip install --force-reinstall git+https://github.com/ssec-jhu/flfm.git
+	conda run -p build/env python -m pip install --force-reinstall git+https://github.com/ssec-jhu/flfm.git
 
 # Build the model files and place them in the models dir in the source treee
 flfm-ij/src/main/resources/models/model%.pt: flfm-py
 	@echo "Exporting $@"
 	mkdir -p models
-	micromamba run -p build/env python -m flfm.cli export --out $@ --n_steps $*
+	conda run -p build/env python -m flfm.cli export --out $@ --n_steps $*
 
 # remove the current model files and then generate them again
 models: clean-models $(MODEL_FILES)
@@ -56,6 +56,6 @@ clean-models:
 clean: clean-models
 	mvn clean -f flfm-ij/pom.xml
 	if [ -e build/env ]; then \
-		micromamba env remove -y -p build/env; \
+		conda env remove -y -p build/env; \
 	fi
 	rm -rf ./build
