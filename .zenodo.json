@@ -1,5 +1,10 @@
 {
     "creators": [
+         {
+            "affiliation": "Howard Lab at Yale University",
+            "name": "Raymond Adkins",
+            "orcid": "0000-0001-7622-2812"
+        },
         {
             "affiliation": "Scientific Software Engineering Center at JHU",
             "name": "Ryan Hausen",
