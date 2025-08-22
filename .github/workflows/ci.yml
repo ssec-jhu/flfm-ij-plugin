@@ -82,10 +82,14 @@ jobs:
       - name: build models
         run: |
           make models
-      - name: Build JAR
-        run: mvn -B package -Dapp.version=${{ env.CLEAN_REF_NAME }}-SNAPSHOT --file flfm-ij/pom.xml
-      - name: Upload JAR to GitHub Packages
-        run: mvn --batch-mode deploy -Dapp.version=${{ env.CLEAN_REF_NAME }}-SNAPSHOT --file flfm-ij/pom.xml
+      - name: Build JAR for Linux
+        run: mvn -B package -Dapp.version=${{ env.CLEAN_REF_NAME }}-linux-SNAPSHOT --file flfm-ij/pom.xml -P linux-cuda
+      - name: Build JAR for Windows
+        run: mvn -B package -Dapp.version=${{ env.CLEAN_REF_NAME }}-windows-SNAPSHOT --file flfm-ij/pom.xml -P windows-cuda
+      - name: Upload JAR(s) to GitHub Packages
+        run: |
+          mvn --batch-mode deploy -Dapp.version=${{ env.CLEAN_REF_NAME }}-linux-SNAPSHOT --file flfm-ij/pom.xml
+          mvn --batch-mode deploy -Dapp.version=${{ env.CLEAN_REF_NAME }}-widows-SNAPSHOT --file flfm-ij/pom.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
