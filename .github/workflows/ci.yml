@@ -75,6 +75,9 @@ jobs:
       - name: clean PR ref name
         run: |
           echo "CLEAN_REF_NAME=${{ github.ref_name }}" | sed 's/\//-/g' >> $GITHUB_ENV
+      - name: set jar version SNAPSHOT suffix for PRs only
+        if: github.event_name == 'pull_request'
+        run: echo "VERSION_SUFFIX=-SNAPSHOT" >> $GITHUB_ENV
       - name: setup conda
         uses: conda-incubator/setup-miniconda@v3
         with:
@@ -83,13 +86,13 @@ jobs:
         run: |
           make models
       - name: Build JAR for Linux
-        run: mvn -B package -Dapp.version=${{ env.CLEAN_REF_NAME }}-linux-SNAPSHOT --file flfm-ij/pom.xml -P linux-cuda
+        run: mvn -B package -Dapp.version=${{ env.CLEAN_REF_NAME }}-linux${{ env.VERSION_SUFFIX }} --file flfm-ij/pom.xml -P linux-cuda
       - name: Build JAR for Windows
-        run: mvn -B package -Dapp.version=${{ env.CLEAN_REF_NAME }}-windows-SNAPSHOT --file flfm-ij/pom.xml -P windows-cuda
+        run: mvn -B package -Dapp.version=${{ env.CLEAN_REF_NAME }}-windows${{ env.VERSION_SUFFIX }} --file flfm-ij/pom.xml -P windows-cuda
       - name: Upload JAR(s) to GitHub Packages
         run: |
-          mvn --batch-mode deploy -Dapp.version=${{ env.CLEAN_REF_NAME }}-linux-SNAPSHOT --file flfm-ij/pom.xml
-          mvn --batch-mode deploy -Dapp.version=${{ env.CLEAN_REF_NAME }}-widows-SNAPSHOT --file flfm-ij/pom.xml
+          mvn --batch-mode deploy -Dapp.version=${{ env.CLEAN_REF_NAME }}-linux${{ env.VERSION_SUFFIX }} --file flfm-ij/pom.xml
+          mvn --batch-mode deploy -Dapp.version=${{ env.CLEAN_REF_NAME }}-widows${{ env.VERSION_SUFFIX }} --file flfm-ij/pom.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
