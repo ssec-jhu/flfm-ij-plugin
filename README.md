@@ -26,8 +26,6 @@ Place the `jar` file into the `plugins` folder for you ImageJ installation.
 
 Open ImageJ and select `Plugins` from the top menu, then select `FLFM Plugin`.
 
-
-
 > [!TIP]
 > ISSUES DETECTING GPU?
 > Sometimes there can be an issue with the detection of the GPU when running the
@@ -91,15 +89,52 @@ make clean
 
 ### Run
 
-  #### Docker:
-  (TODO)
+This plugin can be run as a standalone jar and as an ImageJ 1.x plugin
+with the latter being the general use case and the former being more
+helpful for debugging and testing, but functional nonetheless.
 
-  #### Locally:
-  (TODO)
+#### ImageJ 1.x Plugin
+
+To run this in ImageJ 1.x, copy the `.jar` for your OS
+`flfm_plugin.<linux|windows>.jar` into the `plugins` folder in your ImageJ
+installation, then start ImageJ.
+
+#### Standalone
+
+Using Java 8, the jar can be run directly using:
+
+```bash
+java -jar flfm_plugin.<linux|windows>.jar
+```
+
+Where `<linux|window>` should be replaced with the OS you're running it on.
 
 ### Usage:
-(TODO)
 
+The standalone jar opens directly to the FLFM PLugin UI, if it's being run as
+an ImageJ plugin there is a single step to get to the plugin.
+
+Open ImageJ and from the *Plugins* menu select `FLFM Plugin`:
+
+![imagej-plugin-select](docs/_static/imagej_plugin_menu.png)
+
+This will open the FLFM Plugin Menu:
+
+![imagej-plugin-select](docs/_static/plugin_menu.png)
+
+To use the plugin populate the fields with the desired values and click **Calculate**
+
+![imagej-plugin-guide](docs/_static/plugin_ui_guide.png)
+
+**NOTE on image selection**
+
+When you try to select an image, the Plugin will first try to get an image
+already opened in ImageJ with the following menu popping up:
+
+![plugin-img-selector](docs/_static/plugin_ui_img_selector.png)
+
+If the plugin doesn't detect any open ImageJ images or if you close the menu,
+the plugin will open a file selector menu to select an image from disk.
 
 # Testing
 
