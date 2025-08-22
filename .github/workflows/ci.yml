@@ -92,7 +92,7 @@ jobs:
       - name: Upload JAR(s) to GitHub Packages
         run: |
           mvn --batch-mode deploy -Dapp.version=${{ env.CLEAN_REF_NAME }}-linux${{ env.VERSION_SUFFIX }} --file flfm-ij/pom.xml
-          mvn --batch-mode deploy -Dapp.version=${{ env.CLEAN_REF_NAME }}-widows${{ env.VERSION_SUFFIX }} --file flfm-ij/pom.xml
+          mvn --batch-mode deploy -Dapp.version=${{ env.CLEAN_REF_NAME }}-windows${{ env.VERSION_SUFFIX }} --file flfm-ij/pom.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
