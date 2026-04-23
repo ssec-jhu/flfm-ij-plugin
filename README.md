@@ -1,3 +1,7 @@
+> [!IMPORTANT]  
+> This project has completed development and has been delivered. Continued development is now happening here: [https://github.com/OpenFLR/flfm-ij-plugin](https://github.com/OpenFLR/flfm-ij-plugin).
+
+
 # SSEC-JHU flfm_ij_plugin
 
 [![CI](https://github.com/ssec-jhu/flfm-ij-plugin/actions/workflows/ci.yml/badge.svg)](https://github.com/ssec-jhu/flfm-ij-plugin/actions/workflows/ci.yml)
